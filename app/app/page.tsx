@@ -2,16 +2,18 @@
 import { useRef, useState, useEffect, MouseEvent, FC } from 'react';
 import styles from '../../styles/Home.module.css';
 import axios from 'axios';
+import Image from 'next/image';
+import Link from 'next/link';
+interface PageProps {}
 
-interface pageProps {}
-
-const Page: FC<pageProps> = ({}) => {
+const Page: FC<PageProps> = ({}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const promptRef = useRef<HTMLInputElement>(null);
-  const [imageSrc, setImageSrc] = useState<string>('');
+  const [imageSrc, setImageSrc] = useState<string>('/blank.png');
   const [lineWidth, setLineWidth] = useState<number>(5);
   const [strokeStyle, setStrokeStyle] = useState<string>('#000000');
   const [history, setHistory] = useState<ImageData[]>([]);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -85,7 +87,7 @@ const Page: FC<pageProps> = ({}) => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas || !apiUrl) return;
 
     const context = canvas.getContext('2d');
     if (!context) return;
@@ -114,13 +116,13 @@ const Page: FC<pageProps> = ({}) => {
       formData.append('prompt', currentPrompt);
 
       try {
-        const response = await axios.post('http://localhost:8000/api/upload/', formData, {
+        const response = await axios.post(apiUrl, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
         });
         console.log(response.data.image);
-        setImageSrc(response.data.image);
+        setImageSrc(`data:image/png;base64,${response.data.image}`);
       } catch (error) {
         console.error('Error uploading image:', error);
       }
@@ -160,15 +162,15 @@ const Page: FC<pageProps> = ({}) => {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <div className={styles.logo}>
-          <svg width="40" height="40" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-            <rect x="5" y="5" width="40" height="40" rx="5" ry="5" fill="#333" />
-            <text x="10" y="38" font-family="Roboto" font-size="32" fill="#FFF">AI</text>
-          </svg>
-          <h1>Painting App</h1>
-        </div>
-      </header>
+	    <header className={styles.header}>
+	      <Link href="/" className={styles.logo}>
+		<svg width="40" height="40" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+		  <rect x="5" y="5" width="40" height="40" rx="5" ry="5" fill="#333" />
+		  <text x="10" y="38" font-family="Roboto" font-size="32" fill="#FFF">AI</text>
+		</svg>
+		<h1>Painting App</h1>
+	      </Link>
+	    </header>
       <div className={styles.content}>
         <div className={styles.promptContainer}>
           <input
@@ -206,7 +208,7 @@ const Page: FC<pageProps> = ({}) => {
             </div>
             <canvas ref={canvasRef} className={styles.canvas}></canvas>
           </div>
-          {imageSrc && <img src={`data:image/png;base64,${imageSrc}`} className={styles.image} alt="Loaded" />}
+          <Image src={imageSrc} className={styles.image} alt="Loaded" width={512} height={512} />
         </div>
       </div>
       <footer className={styles.footer}>
