@@ -79,7 +79,7 @@ const Page: FC<PageProps> = ({}) => {
       }
       painting = false;
       context.beginPath();
-      const currentPrompt = promptRef.current?.value || '';
+      const currentPrompt = promptRef.current?.value || 'dragon';
       sendDataToServer(currentPrompt);
     };
 
