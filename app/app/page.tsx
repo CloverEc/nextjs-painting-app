@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useState, useEffect, MouseEvent as ReactMouseEvent, FC } from 'react';
+import { useRef, useState, useEffect, useCallback, MouseEvent as ReactMouseEvent, FC } from 'react';
 import styles from '../../styles/Home.module.css';
 import axios from 'axios';
 import Image from 'next/image';
@@ -16,6 +16,35 @@ const Page: FC<PageProps> = ({}) => {
   const [history, setHistory] = useState<ImageData[]>([]);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
+
+  const sendDataToServer = useCallback(async (currentPrompt: string) => {
+    if (!canvasRef.current || !apiUrl) return;
+
+    const imageData = canvasRef.current.toDataURL('image/png');
+    const canvas = canvasRef.current;
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        console.error('Failed to create Blob from canvas.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', blob, 'image.png');
+      formData.append('prompt', currentPrompt);
+
+      try {
+        const response = await axios.post(apiUrl, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        console.log(response.data.image);
+        setImageSrc(`data:image/png;base64,${response.data.image}`);
+      } catch (error) {
+        console.error('Error uploading image:', error);
+      }
+    });
+  }, [apiUrl]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -107,35 +136,6 @@ const Page: FC<PageProps> = ({}) => {
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setStrokeStyle(e.target.value);
-  };
-
-  const sendDataToServer = async (currentPrompt: string) => {
-    if (!canvasRef.current || !apiUrl) return;
-
-    const imageData = canvasRef.current.toDataURL('image/png');
-    const canvas = canvasRef.current;
-    canvas.toBlob(async (blob) => {
-      if (!blob) {
-        console.error('Failed to create Blob from canvas.');
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('file', blob, 'image.png');
-      formData.append('prompt', currentPrompt);
-
-      try {
-        const response = await axios.post(apiUrl, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        console.log(response.data.image);
-        setImageSrc(`data:image/png;base64,${response.data.image}`);
-      } catch (error) {
-        console.error('Error uploading image:', error);
-      }
-    });
   };
 
   const handleUndo = () => {
