@@ -133,3 +133,10 @@
   margin-top: 42px; /* 画像の上にスペースを追加 */
 }
 .h1 { font-size: 28px; }
+
+.label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+}

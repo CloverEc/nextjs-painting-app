@@ -2,7 +2,7 @@
 import { useRef, useState, useEffect, useCallback, MouseEvent as ReactMouseEvent, FC } from 'react';
 import styles from '../../styles/Home.module.css';
 import axios from 'axios';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import Link from 'next/link';
 
 interface PageProps {}
@@ -10,6 +10,7 @@ interface PageProps {}
 const Page: FC<PageProps> = ({}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const promptRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageSrc, setImageSrc] = useState<string>('/blank.png');
   const [lineWidth, setLineWidth] = useState<number>(5);
   const [strokeStyle, setStrokeStyle] = useState<string>('#000000');
@@ -169,6 +170,32 @@ const Page: FC<PageProps> = ({}) => {
     setHistory([]);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();  // ネイティブのImageオブジェクトを使用
+      img.onload = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const context = canvas.getContext('2d');
+        if (!context) return;
+
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        // Canvasの内容をAPIに送信
+        const currentPrompt = promptRef.current?.value || '';
+        sendDataToServer(currentPrompt);
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -193,18 +220,17 @@ const Page: FC<PageProps> = ({}) => {
           <div className={styles.canvasContainer}>
             <div className={styles.controls}>
               <label>
-                Line Width:
+                Size
                 <input
                   type="range"
                   min="1"
-                  max="20"
+                  max="50"
                   value={lineWidth}
                   onChange={handleLineWidthChange}
                   className={styles.rangeInput}
                 />
               </label>
-              <label>
-                Color:
+              <label  className={styles.label}>
                 <input
                   type="color"
                   value={strokeStyle}
@@ -212,12 +238,21 @@ const Page: FC<PageProps> = ({}) => {
                   className={styles.colorInput}
                 />
               </label>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+              />
+              <button onClick={() => fileInputRef.current?.click()} className={styles.button}>
+                Upload
+              </button>
               <button onClick={clearCanvas} className={styles.button}>Clear</button>
               <button onClick={handleUndo} className={styles.button}>Redo</button>
             </div>
             <canvas ref={canvasRef} className={styles.canvas}></canvas>
           </div>
-          <Image src={imageSrc} className={styles.image} alt="Loaded" width={512} height={512} />
+          <NextImage src={imageSrc} className={styles.image} alt="Loaded" width={512} height={512} />
         </div>
       </div>
       <footer className={styles.footer}>
