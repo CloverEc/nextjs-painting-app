@@ -1,4 +1,3 @@
-
 'use client';
 import { useRef, useState, useEffect, useCallback, MouseEvent as ReactMouseEvent, FC } from 'react';
 import styles from '../../styles/Home.module.css';
