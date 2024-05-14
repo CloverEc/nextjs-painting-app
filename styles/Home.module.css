@@ -1,0 +1,123 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.header {
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #f8f8f8;
+  text-align: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer {
+  width: 100%;
+  height: 40px;
+  padding: 10px;
+  background-color: #f8f8f8;
+  text-align: center;
+  border-top: 1px solid #ddd;
+}
+
+.promptContainer {
+	margin-top: -60px;
+
+}
+
+.promptInput {
+  width: 300px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #f0f0f0;
+	margin-bottom:20px;
+}
+
+.canvasImageContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px; /* キャンバスと画像の間のスペースを調整 */
+}
+
+.canvasContainer {
+  position: relative;
+}
+
+.controls {
+  margin-bottom: 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.colorInput {
+  border-radius: 50%; /* サークルにする */
+  padding: 5px;
+  background-color: #f0f0f0;
+  width: 36px; /* サイズを調整 */
+  height: 36px; /* サイズを調整 */
+  -webkit-appearance: none; /* Webkitブラウザのデフォルトスタイルを無効に */
+  -moz-appearance: none; /* Mozillaブラウザのデフォルトスタイルを無効に */
+  appearance: none; /* デフォルトスタイルを無効に */
+  cursor: pointer;
+}
+
+.colorInput::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 50%;
+}
+
+.colorInput::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.colorInput::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.rangeInput {
+  vertical-align: middle; /* 垂直方向の中央揃え */
+}
+
+.button {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #e0e0e0;
+}
+
+.canvas {
+  border: 1px solid black;
+}
+
+.image {
+  margin-top:42px;
+  width: 512px;
+  height: 512px;
+  border: 1px solid black;
+}
+
