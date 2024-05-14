@@ -15,7 +15,7 @@ const Page: FC<PageProps> = ({}) => {
   const [strokeStyle, setStrokeStyle] = useState<string>('#000000');
   const [history, setHistory] = useState<ImageData[]>([]);
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -79,7 +79,7 @@ const Page: FC<PageProps> = ({}) => {
       canvas.removeEventListener('mousemove', draw);
       canvas.removeEventListener('mouseleave', stopPainting);
     };
-  }, []);
+  }, [sendDataToServer]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
