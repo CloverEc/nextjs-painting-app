@@ -19,6 +19,8 @@ export const useDraw = (onDraw: ({ ctx, currentPoint, prevPoint }: Draw) => void
       if (!ctx) return;
 
       const rect = canvasRef.current?.getBoundingClientRect();
+      if (!rect) return; // rectがundefinedの場合は早期リターン
+
       const prevPoint = { x: e.clientX - rect.left, y: e.clientY - rect.top };
       onDraw({ ctx, currentPoint, prevPoint });
     };
