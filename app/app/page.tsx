@@ -1,9 +1,10 @@
 'use client';
-import { useRef, useState, useEffect, MouseEvent, FC } from 'react';
+import { useRef, useState, useEffect, MouseEvent as ReactMouseEvent, FC } from 'react';
 import styles from '../../styles/Home.module.css';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
+
 interface PageProps {}
 
 const Page: FC<PageProps> = ({}) => {
@@ -13,6 +14,7 @@ const Page: FC<PageProps> = ({}) => {
   const [lineWidth, setLineWidth] = useState<number>(5);
   const [strokeStyle, setStrokeStyle] = useState<string>('#000000');
   const [history, setHistory] = useState<ImageData[]>([]);
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
@@ -22,8 +24,12 @@ const Page: FC<PageProps> = ({}) => {
     const context = canvas.getContext('2d');
     if (!context) return;
 
-    canvas.width = 512;
-    canvas.height = 512;
+    // キャンバスのサイズを固定
+    const canvasWidth = 512;
+    const canvasHeight = 512;
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
     context.lineCap = 'round';
     context.lineJoin = 'round';
 
@@ -87,7 +93,7 @@ const Page: FC<PageProps> = ({}) => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !apiUrl) return;
+    if (!canvas) return;
 
     const context = canvas.getContext('2d');
     if (!context) return;
@@ -104,7 +110,7 @@ const Page: FC<PageProps> = ({}) => {
   };
 
   const sendDataToServer = async (currentPrompt: string) => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !apiUrl) return;
 
     const imageData = canvasRef.current.toDataURL('image/png');
     const canvas = canvasRef.current;
@@ -162,15 +168,15 @@ const Page: FC<PageProps> = ({}) => {
 
   return (
     <div className={styles.container}>
-	    <header className={styles.header}>
-	      <Link href="/" className={styles.logo}>
-		<svg width="40" height="40" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-		  <rect x="5" y="5" width="40" height="40" rx="5" ry="5" fill="#333" />
-		  <text x="10" y="38" font-family="Roboto" font-size="32" fill="#FFF">AI</text>
-		</svg>
-		<h1>Painting App</h1>
-	      </Link>
-	    </header>
+      <header className={styles.header}>
+        <Link href="/" className={styles.logo}>
+          <svg width="40" height="40" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="5" width="40" height="40" rx="5" ry="5" fill="#333" />
+            <text x="10" y="38" font-family="Roboto" font-size="32" fill="#FFF">AI</text>
+          </svg>
+          <h1>Painting App</h1>
+        </Link>
+      </header>
       <div className={styles.content}>
         <div className={styles.promptContainer}>
           <input
