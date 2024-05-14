@@ -130,7 +130,7 @@
   width: 512px;
   height: 512px;
   border: 1px solid black;
-  margin-top: 42px; /* 画像の上にスペースを追加 */
+  margin-top: 44px; /* 画像の上にスペースを追加 */
 }
 .h1 { font-size: 28px; }
 
