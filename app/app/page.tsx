@@ -94,6 +94,7 @@ const Page: FC<PageProps> = ({}) => {
       } else if (e instanceof TouchEvent) {
         clientX = e.touches[0].clientX;
         clientY = e.touches[0].clientY;
+        e.preventDefault(); // スクロールを防止
       } else {
         return;
       }
@@ -113,9 +114,9 @@ const Page: FC<PageProps> = ({}) => {
     canvas.addEventListener('mouseup', stopPainting);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseleave', stopPainting);
-    canvas.addEventListener('touchstart', startPainting);
+    canvas.addEventListener('touchstart', startPainting, { passive: false });
     canvas.addEventListener('touchend', stopPainting);
-    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchmove', draw, { passive: false });
     canvas.addEventListener('touchcancel', stopPainting);
 
     return () => {
@@ -230,7 +231,6 @@ const Page: FC<PageProps> = ({}) => {
         <div className={styles.canvasImageContainer}>
           <NextImage src={imageSrc} className={styles.image} alt="Loaded" width={512} height={512} />
           <div className={styles.canvasContainer}>
-            <canvas ref={canvasRef} className={styles.canvas}></canvas>
             <Controls
               lineWidth={lineWidth}
               strokeStyle={strokeStyle}
@@ -241,6 +241,7 @@ const Page: FC<PageProps> = ({}) => {
               clearCanvas={clearCanvas}
               handleUndo={handleUndo}
             />
+            <canvas ref={canvasRef} className={styles.canvas}></canvas>
           </div>
         </div>
       </div>
