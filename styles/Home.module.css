@@ -122,13 +122,14 @@
 .canvas {
   border: 1px solid black;
   height: 512px;
+  margin-bottom: 10px;
 }
 
 .image {
   width: 512px;
   height: 512px;
   border: 1px solid black;
-  margin-top: 76px;
+  margin-top: 22px;
   margin-right: 20px;
 }
 
