@@ -131,13 +131,15 @@
   border: 1px solid black;
   margin-top: 22px;
   margin-right: 20px;
+  margin-bottom: 10px;
 }
 
 .footer {
   width: 100%;
   padding: 10px 0;
   text-align: center;
-  background-color: #f1f1f1;
+  background-color: #f8f8f8;
+
 }
 
 @media (max-width: 768px) {

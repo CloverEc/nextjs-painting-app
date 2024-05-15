@@ -216,6 +216,15 @@ const Page: FC<PageProps> = ({}) => {
     reader.readAsDataURL(file);
   };
 
+  const downloadImage = () => {
+    const link = document.createElement('a');
+    link.href = imageSrc;
+    link.download = 'downloaded-image.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className={styles.container}>
       <Header />
@@ -229,7 +238,10 @@ const Page: FC<PageProps> = ({}) => {
           />
         </div>
         <div className={styles.canvasImageContainer}>
-          <NextImage src={imageSrc} className={styles.image} alt="Loaded" width={512} height={512} />
+          <div className={styles.imageContainer}>
+            <NextImage src={imageSrc} className={styles.image} alt="Loaded" width={512} height={512} />
+            <button onClick={downloadImage} className={styles.button}>Download Image</button>
+          </div>
           <div className={styles.canvasContainer}>
             <canvas ref={canvasRef} className={styles.canvas}></canvas>
             <Controls
@@ -253,4 +265,3 @@ const Page: FC<PageProps> = ({}) => {
 };
 
 export default Page;
-
