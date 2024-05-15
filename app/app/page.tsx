@@ -1,9 +1,10 @@
 'use client';
-import { useRef, useState, useEffect, useCallback, MouseEvent as ReactMouseEvent, FC } from 'react';
+import { useRef, useState, useEffect, useCallback, FC } from 'react';
 import styles from '../../styles/Home.module.css';
 import axios from 'axios';
 import NextImage from 'next/image';
-import Link from 'next/link';
+import Header from './components/Header';
+import Controls from './components/Controls';
 
 interface PageProps {}
 
@@ -21,8 +22,8 @@ const Page: FC<PageProps> = ({}) => {
   const sendDataToServer = useCallback(async (currentPrompt: string) => {
     if (!canvasRef.current || !apiUrl) return;
 
-    const imageData = canvasRef.current.toDataURL('image/png');
     const canvas = canvasRef.current;
+    const imageData = canvas.toDataURL('image/png');
     canvas.toBlob(async (blob) => {
       if (!blob) {
         console.error('Failed to create Blob from canvas.');
@@ -39,7 +40,6 @@ const Page: FC<PageProps> = ({}) => {
             'Content-Type': 'multipart/form-data',
           },
         });
-        console.log(response.data.image);
         setImageSrc(`data:image/png;base64,${response.data.image}`);
       } catch (error) {
         console.error('Error uploading image:', error);
@@ -51,7 +51,7 @@ const Page: FC<PageProps> = ({}) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return;
 
     // キャンバスのサイズを固定
@@ -68,8 +68,9 @@ const Page: FC<PageProps> = ({}) => {
 
     let painting = false;
 
-    const startPainting = (e: MouseEvent) => {
+    const startPainting = (e: MouseEvent | TouchEvent) => {
       painting = true;
+      context.beginPath();
       draw(e);
     };
 
@@ -83,13 +84,23 @@ const Page: FC<PageProps> = ({}) => {
       sendDataToServer(currentPrompt);
     };
 
-    const draw = (e: MouseEvent) => {
+    const draw = (e: MouseEvent | TouchEvent) => {
       if (!painting) return;
       const rect = canvas.getBoundingClientRect();
-      context.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      let clientX, clientY;
+      if (e instanceof MouseEvent) {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      } else if (e instanceof TouchEvent) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        return;
+      }
+      context.lineTo(clientX - rect.left, clientY - rect.top);
       context.stroke();
       context.beginPath();
-      context.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+      context.moveTo(clientX - rect.left, clientY - rect.top);
     };
 
     const saveHistory = () => {
@@ -102,12 +113,20 @@ const Page: FC<PageProps> = ({}) => {
     canvas.addEventListener('mouseup', stopPainting);
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseleave', stopPainting);
+    canvas.addEventListener('touchstart', startPainting);
+    canvas.addEventListener('touchend', stopPainting);
+    canvas.addEventListener('touchmove', draw);
+    canvas.addEventListener('touchcancel', stopPainting);
 
     return () => {
       canvas.removeEventListener('mousedown', startPainting);
       canvas.removeEventListener('mouseup', stopPainting);
       canvas.removeEventListener('mousemove', draw);
       canvas.removeEventListener('mouseleave', stopPainting);
+      canvas.removeEventListener('touchstart', startPainting);
+      canvas.removeEventListener('touchend', stopPainting);
+      canvas.removeEventListener('touchmove', draw);
+      canvas.removeEventListener('touchcancel', stopPainting);
     };
   }, [sendDataToServer]);
 
@@ -115,7 +134,7 @@ const Page: FC<PageProps> = ({}) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return;
 
     context.lineWidth = lineWidth;
@@ -125,7 +144,7 @@ const Page: FC<PageProps> = ({}) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return;
 
     context.strokeStyle = strokeStyle;
@@ -198,15 +217,7 @@ const Page: FC<PageProps> = ({}) => {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <Link href="/" className={styles.logo}>
-          <svg width="40" height="40" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
-            <rect x="5" y="5" width="40" height="40" rx="5" ry="5" fill="#333" />
-            <text x="10" y="38" font-family="Roboto" font-size="32" fill="#FFF">AI</text>
-          </svg>
-          <h1>Painting App</h1>
-        </Link>
-      </header>
+      <Header />
       <div className={styles.content}>
         <div className={styles.promptContainer}>
           <input
@@ -217,42 +228,20 @@ const Page: FC<PageProps> = ({}) => {
           />
         </div>
         <div className={styles.canvasImageContainer}>
+          <NextImage src={imageSrc} className={styles.image} alt="Loaded" width={512} height={512} />
           <div className={styles.canvasContainer}>
-            <div className={styles.controls}>
-              <label>
-                Size
-                <input
-                  type="range"
-                  min="1"
-                  max="50"
-                  value={lineWidth}
-                  onChange={handleLineWidthChange}
-                  className={styles.rangeInput}
-                />
-              </label>
-              <label  className={styles.label}>
-                <input
-                  type="color"
-                  value={strokeStyle}
-                  onChange={handleColorChange}
-                  className={styles.colorInput}
-                />
-              </label>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                style={{ display: 'none' }}
-              />
-              <button onClick={() => fileInputRef.current?.click()} className={styles.button}>
-                Upload
-              </button>
-              <button onClick={clearCanvas} className={styles.button}>Clear</button>
-              <button onClick={handleUndo} className={styles.button}>Redo</button>
-            </div>
+            <Controls
+              lineWidth={lineWidth}
+              strokeStyle={strokeStyle}
+              handleLineWidthChange={handleLineWidthChange}
+              handleColorChange={handleColorChange}
+              handleFileChange={handleFileChange}
+              fileInputRef={fileInputRef}
+              clearCanvas={clearCanvas}
+              handleUndo={handleUndo}
+            />
             <canvas ref={canvasRef} className={styles.canvas}></canvas>
           </div>
-          <NextImage src={imageSrc} className={styles.image} alt="Loaded" width={512} height={512} />
         </div>
       </div>
       <footer className={styles.footer}>

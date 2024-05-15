@@ -1,9 +1,10 @@
 .container {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   min-height: 100vh;
 }
-
 .header {
   width: 100%;
   padding: 10px 20px;
@@ -13,36 +14,23 @@
 }
 
 .logo {
-	width: 200px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  text-decoration: none; /* リンクのデフォルトの装飾を削除 */
-  color: inherit; /* 親要素の色を継承 */
+  text-decoration: none;
+  color: black;
 }
 
-.logo svg {
-  cursor: pointer; /* カーソルをポインタに変更 */
+.h1 {
+	font-size: 28px;
+      	margin-left: 10px;
 }
 
-.logo h1 {
-  margin: 0; /* マージンをリセット */
-}
 .content {
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-.footer {
-  width: 100%;
-  height: 40px;
-  padding: 10px;
-  background-color: #f8f8f8;
-  text-align: center;
-  border-top: 1px solid #ddd;
+  flex: 1;
 }
 
 .promptContainer {
@@ -57,24 +45,33 @@
   border-radius: 10px;
   background-color: #f0f0f0;
 }
-
 .canvasImageContainer {
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* ここを修正 */
   justify-content: center;
-  gap: 20px; /* キャンバスと画像の間のスペースを調整 */
+  flex-wrap: wrap;
 }
 
 .canvasContainer {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 20px; /* ここを追加して位置を調整 */
 }
 
 .controls {
-  margin-bottom: 10px;
   display: flex;
-  gap: 10px;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
+
+.rangeInput,
+.colorInput {
+  margin-left: 10px;
+}
+
 
 .colorInput {
   border-radius: 50%; /* サークルにする */
@@ -103,8 +100,11 @@
   border-radius: 50%;
 }
 
-.rangeInput {
-  vertical-align: middle; /* 垂直方向の中央揃え */
+
+
+.label {
+  display: flex;
+  align-items: center;
 }
 
 .button {
@@ -113,30 +113,44 @@
   border-radius: 10px;
   padding: 5px 10px;
   cursor: pointer;
+  margin-left:10px;
 }
 
 .button:hover {
   background-color: #e0e0e0;
 }
-
 .canvas {
   border: 1px solid black;
-  width: 512px; /* 固定幅 */
-  height: 512px; /* 固定高さ */
-  display: block; /* ブロック要素に設定 */
+  height: 512px;
 }
 
 .image {
   width: 512px;
   height: 512px;
   border: 1px solid black;
-  margin-top: 44px; /* 画像の上にスペースを追加 */
+  margin-top: 76px;
+  margin-right: 20px;
 }
-.h1 { font-size: 28px; }
 
-.label {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  vertical-align: middle;
+.footer {
+  width: 100%;
+  padding: 10px 0;
+  text-align: center;
+  background-color: #f1f1f1;
 }
+
+@media (max-width: 768px) {
+  .canvasImageContainer {
+    flex-direction: column;
+  }
+
+  .image {
+    margin-right: 0;
+    margin-bottom: 20px;
+  }
+
+  .canvasContainer {
+    margin-top: 0; /* モバイルではマージントップをリセット */
+  }
+}
+
