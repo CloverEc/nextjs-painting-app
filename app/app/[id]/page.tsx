@@ -34,6 +34,8 @@ const Page: FC<PageProps> = ({ params }) => {
   const [loading, setLoading] = useState(true);
   const imgService = {
     run: (src: string,prompt: string) => {
+            if (!prompt || prompt === 'dragon') return;
+           
 	    const canvas = canvasRef.current;
 	    if (!canvas) return;
 
