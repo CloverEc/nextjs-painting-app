@@ -59,6 +59,7 @@ const Page: FC<PageProps> = ({ params }) => {
 		 }
 		  img.src = src;
 	     setTimeout(() => { 
+                    console.log("one");
 	            sendDataToServer(prompt)
 		    setLoading(false);
 	      }, 1);
@@ -100,10 +101,8 @@ const Page: FC<PageProps> = ({ params }) => {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return;
-
     if (!loading) return;
     if (!inputRef.current) return
     if (!selectedItem) return
@@ -119,7 +118,6 @@ const Page: FC<PageProps> = ({ params }) => {
     inputRef.current.value = selectedItem.content;
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return;
 
@@ -264,7 +262,6 @@ const Page: FC<PageProps> = ({ params }) => {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        // Canvasの内容をAPIに送信
         const currentPrompt = inputRef.current?.value || '';
         sendDataToServer(currentPrompt);
       };
