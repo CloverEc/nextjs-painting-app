@@ -14,6 +14,7 @@ interface PageProps {
 
 const Page: FC<PageProps> = ({ params }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const hasRunRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageSrc, setImageSrc] = useState<string>('/images/blank.png');
@@ -62,6 +63,7 @@ const Page: FC<PageProps> = ({ params }) => {
                     console.log("one");
 	            sendDataToServer(prompt)
 		    setLoading(false);
+	            hasRunRef.current = true;
 	      }, 1);
 	    } 
     },
@@ -99,6 +101,7 @@ const Page: FC<PageProps> = ({ params }) => {
     });
   }, [apiUrl]);
   useEffect(() => {
+    if (hasRunRef.current) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d', { willReadFrequently: true });
