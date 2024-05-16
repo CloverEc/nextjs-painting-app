@@ -103,16 +103,18 @@ const Page: FC<PageProps> = ({ params }) => {
     if (!context) return;
 
     if (!loading) return;
-    const currentPrompt = inputRef.current?.value || 'dragon';
+    if (!inputRef.current) return
+    if (!selectedItem) return
+    const currentPrompt = inputRef.current.value;
     const image2 = selectedItem ? selectedItem.image2 : '/images/blank.png';
     imgService.run(image2,currentPrompt);
   }, [loading,imgService,selectedItem]);
 
 
   useEffect(() => {
-    if (inputRef.current){
-      inputRef.current.value = selectedItem ? selectedItem.content : 'dragon';
-    }
+    if (!inputRef.current) return;
+    if (!selectedItem) return;
+    inputRef.current.value = selectedItem.content;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
