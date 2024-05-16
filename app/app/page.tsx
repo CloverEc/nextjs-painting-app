@@ -1,5 +1,4 @@
 'use client'
-import { useRouter } from  'next/navigation';
 import { useRef, useState, useEffect, useCallback, FC } from 'react';
 import styles from '../../styles/Home.module.css';
 import axios from 'axios';
@@ -19,8 +18,6 @@ const Page: FC<PageProps> = ({}) => {
   const [history, setHistory] = useState<ImageData[]>([]);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
-  const router = useRouter();
-  console.log(router.query);
 
   const sendDataToServer = useCallback(async (currentPrompt: string) => {
     if (!canvasRef.current || !apiUrl) return;
