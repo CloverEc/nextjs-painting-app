@@ -113,6 +113,7 @@ const Page: FC<PageProps> = ({ params }) => {
 
 
   useEffect(() => {
+    if (!loading) return;
     if (!inputRef.current) return;
     if (!selectedItem) return;
     inputRef.current.value = selectedItem.content;
@@ -187,6 +188,7 @@ const Page: FC<PageProps> = ({ params }) => {
   }, [sendDataToServer,selectedItem]);
 
   useEffect(() => {
+    if (!loading) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -197,6 +199,7 @@ const Page: FC<PageProps> = ({ params }) => {
   }, [lineWidth]);
 
   useEffect(() => {
+    if (!loading) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -207,10 +210,12 @@ const Page: FC<PageProps> = ({ params }) => {
   }, [strokeStyle]);
 
   const handleLineWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!loading) return;
     setLineWidth(Number(e.target.value));
   };
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!loading) return;
     setStrokeStyle(e.target.value);
   };
 
