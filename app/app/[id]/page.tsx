@@ -1,27 +1,35 @@
 'use client'
-import { useRouter } from  'next/navigation';
 import { useRef, useState, useEffect, useCallback, FC } from 'react';
-import styles from '../../styles/Home.module.css';
+import styles from '../../../styles/Home.module.css';
 import axios from 'axios';
 import NextImage from 'next/image';
-import Header from './components/Header';
-import Controls from './components/Controls';
+import Header from '..//components/Header';
+import Controls from '../components/Controls';
 
 interface PageProps {}
 
-const Page: FC<PageProps> = ({}) => {
+const Page: FC<PageProps> = ({ params }: { params: { id: int } }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const promptRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageSrc, setImageSrc] = useState<string>('/blank.png');
   const [lineWidth, setLineWidth] = useState<number>(5);
   const [strokeStyle, setStrokeStyle] = useState<string>('#000000');
   const [history, setHistory] = useState<ImageData[]>([]);
+  const items = [
+    { id: 1, title: 'Item 1', content: 'a girl open mouth', image1: '/images/image1.png', image2: '/images/image2.png' },
+    { id: 2, title: 'Item 2', content: 'robot', image1: '/images/image3.png', image2: '/images/image4.png' },
+    { id: 3, title: 'Item 3', content: 'A man widh hat and blue skin , Style - Lieutenant Bluberry, standing on his beautiful horse, arizona landscape, Jean Giraud Moebius cartoonist style', image1: '/images/image5.png', image2: '/images/image6.png' },
+    { id: 4, title: 'Item 4', content: 'Content 4', image1: '/images/image1.png', image2: '/images/image2.png' },
+    { id: 5, title: 'Item 5', content: 'Content 5', image1: '/images/image1.png', image2: '/images/image2.png' },
+    { id: 6, title: 'Item 6', content: 'Content 6', image1: '/images/image1.png', image2: '/images/image2.png' },
+    { id: 7, title: 'Item 7', content: 'Content 7', image1: '/images/image1.png', image2: '/images/image2.png' },
+    { id: 8, title: 'Item 8', content: 'Content 8', image1: '/images/image1.png', image2: '/images/image2.png' },
+  ];
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
-  const router = useRouter();
-  console.log(router.query);
-
+  const id = params.id
+  const selectedItem = id ? items.find(item => item.id.toString() === id) : null;
   const sendDataToServer = useCallback(async (currentPrompt: string) => {
     if (!canvasRef.current || !apiUrl) return;
 
@@ -68,7 +76,16 @@ const Page: FC<PageProps> = ({}) => {
 
     context.fillStyle = '#FFFFFF';
     context.fillRect(0, 0, canvas.width, canvas.height);
-
+    if (inputRef.current) {
+    inputRef.current.value = selectedItem.content;
+    const img = new Image;
+     img.onload = () => {
+	    context.clearRect(0, 0, canvas.width, canvas.height);
+	    context.drawImage(img, 0, 0, canvas.width, canvas.height);
+    }
+     img.src = selectedItem.image2;
+     setTimeout(() => sendDataToServer(selectedItem.content), 1);
+}
     let painting = false;
 
     const startPainting = (e: MouseEvent | TouchEvent) => {
@@ -83,7 +100,7 @@ const Page: FC<PageProps> = ({}) => {
       }
       painting = false;
       context.beginPath();
-      const currentPrompt = promptRef.current?.value || 'dragon';
+      const currentPrompt = inputRef.current?.value || 'dragon';
       sendDataToServer(currentPrompt);
     };
 
@@ -211,7 +228,7 @@ const Page: FC<PageProps> = ({}) => {
         context.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         // Canvasの内容をAPIに送信
-        const currentPrompt = promptRef.current?.value || '';
+        const currentPrompt = inputRef.current?.value || '';
         sendDataToServer(currentPrompt);
       };
       img.src = event.target?.result as string;
@@ -234,7 +251,7 @@ const Page: FC<PageProps> = ({}) => {
       <div className={styles.content}>
         <div className={styles.promptContainer}>
           <input
-            ref={promptRef}
+            ref={inputRef}
             type="text"
             className={styles.promptInput}
             placeholder="Enter your prompt"

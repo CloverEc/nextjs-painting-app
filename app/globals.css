@@ -49,3 +49,45 @@ body {
   border: 1px solid black;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 3s ease-in;
+}
+
+.fade-in-out {
+  animation: fadeInOut 6s infinite;
+}
+@keyframes fadeInOut1 {
+  0%, 50%, 100% {
+    opacity: 1;
+  }
+  25%, 75% {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInOut2 {
+  0%, 50%, 100% {
+    opacity: 0;
+  }
+  25%, 75% {
+    opacity: 1;
+  }
+}
+
+.image1-fade {
+  animation: fadeInOut1 24s infinite;
+}
+
+.image2-fade {
+  animation: fadeInOut2 24s infinite;
+}
+
