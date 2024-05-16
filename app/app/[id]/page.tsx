@@ -154,7 +154,7 @@ const Page: FC<PageProps> = ({ params }) => {
       canvas.removeEventListener('touchmove', draw);
       canvas.removeEventListener('touchcancel', stopPainting);
     };
-  }, [sendDataToServer]);
+  }, [sendDataToServer,selectedItem]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
