@@ -84,10 +84,10 @@ body {
 }
 
 .image1-fade {
-  animation: fadeInOut1 24s infinite;
+  animation: fadeInOut1 10s infinite;
 }
 
 .image2-fade {
-  animation: fadeInOut2 24s infinite;
+  animation: fadeInOut2 10s infinite;
 }
 

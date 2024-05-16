@@ -12,7 +12,7 @@ const Page: FC<PageProps> = ({}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const promptRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imageSrc, setImageSrc] = useState<string>('/blank.png');
+  const [imageSrc, setImageSrc] = useState<string>('/images/blank.png');
   const [lineWidth, setLineWidth] = useState<number>(5);
   const [strokeStyle, setStrokeStyle] = useState<string>('#000000');
   const [history, setHistory] = useState<ImageData[]>([]);

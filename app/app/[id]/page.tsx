@@ -12,12 +12,11 @@ interface PageProps {
   };
 }
 
-
 const Page: FC<PageProps> = ({ params }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imageSrc, setImageSrc] = useState<string>('/blank.png');
+  const [imageSrc, setImageSrc] = useState<string>('/images/blank.png');
   const [lineWidth, setLineWidth] = useState<number>(5);
   const [strokeStyle, setStrokeStyle] = useState<string>('#000000');
   const [history, setHistory] = useState<ImageData[]>([]);
@@ -25,12 +24,46 @@ const Page: FC<PageProps> = ({ params }) => {
     { id: 1, title: 'Item 1', content: 'a girl open mouth', image1: '/images/image1.png', image2: '/images/image2.png' },
     { id: 2, title: 'Item 2', content: 'robot', image1: '/images/image3.png', image2: '/images/image4.png' },
     { id: 3, title: 'Item 3', content: 'A man widh hat and blue skin , Style - Lieutenant Bluberry, standing on his beautiful horse, arizona landscape, Jean Giraud Moebius cartoonist style', image1: '/images/image5.png', image2: '/images/image6.png' },
-    { id: 4, title: 'Item 4', content: 'Content 4', image1: '/images/image1.png', image2: '/images/image2.png' },
-    { id: 5, title: 'Item 5', content: 'Content 5', image1: '/images/image1.png', image2: '/images/image2.png' },
-    { id: 6, title: 'Item 6', content: 'Content 6', image1: '/images/image1.png', image2: '/images/image2.png' },
-    { id: 7, title: 'Item 7', content: 'Content 7', image1: '/images/image1.png', image2: '/images/image2.png' },
-    { id: 8, title: 'Item 8', content: 'Content 8', image1: '/images/image1.png', image2: '/images/image2.png' },
+    { id: 4, title: 'Item 4', content: 'Ink splash waterpaint', image1: '/images/image7.png', image2: '/images/image8.png' },
+    { id: 5, title: 'Item 5', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
+    { id: 6, title: 'Item 6', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
+    { id: 7, title: 'Item 7', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
+    { id: 8, title: 'Item 8', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
   ];
+
+  const [loading, setLoading] = useState(true);
+  const someService = {
+    run: (src: string) => {
+	    const canvas = canvasRef.current;
+	    if (!canvas) return;
+
+	    const context = canvas.getContext('2d', { willReadFrequently: true });
+	    if (!context) return;
+
+	    const canvasWidth = 512;
+	    const canvasHeight = 512;
+
+	    canvas.width = canvasWidth;
+	    canvas.height = canvasHeight;
+	    context.lineCap = 'round';
+	    context.lineJoin = 'round';
+	    context.fillStyle = '#FFFFFF';
+	    context.fillRect(0, 0, canvas.width, canvas.height);
+	    context.clearRect(0, 0, canvas.width, canvas.height);
+	   if ( src ) {
+		 const img = new Image;
+		  img.onload = () => {
+		    context.drawImage(img, 0, 0, canvas.width, canvas.height);
+		 }
+		  img.src = src;
+	     setTimeout(() => { 
+	            sendDataToServer(selectedItem.content)
+		     setLoading(false);
+	      }, 1);
+	    } 
+    },
+  };
+
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL as string;
   const id = params.id
@@ -62,7 +95,6 @@ const Page: FC<PageProps> = ({ params }) => {
       }
     });
   }, [apiUrl]);
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -70,27 +102,30 @@ const Page: FC<PageProps> = ({ params }) => {
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return;
 
-    // キャンバスのサイズを固定
-    const canvasWidth = 512;
-    const canvasHeight = 512;
+    if (!loading) return;
+    someService.run(selectedItem.image2);
+  }, [loading,someService]);
 
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-    context.lineCap = 'round';
-    context.lineJoin = 'round';
 
-    context.fillStyle = '#FFFFFF';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    if (inputRef.current && selectedItem) {
+  useEffect(() => {
     inputRef.current.value = selectedItem.content;
-    const img = new Image;
-     img.onload = () => {
-	    context.clearRect(0, 0, canvas.width, canvas.height);
-	    context.drawImage(img, 0, 0, canvas.width, canvas.height);
-    }
-     img.src = selectedItem.image2;
-     setTimeout(() => sendDataToServer(selectedItem.content), 1);
-    }
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    if (!context) return;
+
+    // キャンバスのサイズを固定
+	  //const canvasWidth = 512;
+	  //const canvasHeight = 512;
+
+	  //canvas.width = canvasWidth;
+	  //canvas.height = canvasHeight;
+	  //context.lineCap = 'round';
+	  //context.lineJoin = 'round';
+	  //context.fillStyle = '#FFFFFF';
+	  //context.fillRect(0, 0, canvas.width, canvas.height);
+	  //context.clearRect(0, 0, canvas.width, canvas.height);
     let painting = false;
 
     const startPainting = (e: MouseEvent | TouchEvent) => {

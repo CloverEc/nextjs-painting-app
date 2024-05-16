@@ -15,14 +15,14 @@ const Home: React.FC = () => {
     { id: 1, title: 'Item 1', content: 'a girl open mouth', image1: '/images/image1.png', image2: '/images/image2.png' },
     { id: 2, title: 'Item 2', content: 'robot', image1: '/images/image3.png', image2: '/images/image4.png' },
     { id: 3, title: 'Item 3', content: 'A man widh hat and blue skin , Style - Lieutenant Bluberry, standing on his beautiful horse, arizona landscape, Jean Giraud Moebius cartoonist style', image1: '/images/image5.png', image2: '/images/image6.png' },
-    { id: 4, title: 'Item 4', content: 'Content 4', image1: '/images/image1.png', image2: '/images/image2.png' },
-    { id: 5, title: 'Item 5', content: 'Content 5', image1: '/images/image1.png', image2: '/images/image2.png' },
-    { id: 6, title: 'Item 6', content: 'Content 6', image1: '/images/image1.png', image2: '/images/image2.png' },
-    { id: 7, title: 'Item 7', content: 'Content 7', image1: '/images/image1.png', image2: '/images/image2.png' },
-    { id: 8, title: 'Item 8', content: 'Content 8', image1: '/images/image1.png', image2: '/images/image2.png' },
+    { id: 4, title: 'Item 4', content: 'Ink splash waterpaint', image1: '/images/image7.png', image2: '/images/image8.png' },
+    { id: 5, title: 'Item 5', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
+    { id: 6, title: 'Item 6', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
+    { id: 7, title: 'Item 7', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
+    { id: 8, title: 'Item 8', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
   ];
 
-  const getRandomDelay = () => `${Math.random() * 5}s`;
+  const getRandomDelay = () => `${Math.random() * 20}s`;
 
   return (
     <div className={styles.container}>
