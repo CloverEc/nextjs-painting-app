@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import styles from '../styles/Home.module.css';
-import 'tailwindcss/tailwind.css';
 import React, { useEffect, useState } from 'react';
 
 const Home: React.FC = () => {

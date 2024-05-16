@@ -3,7 +3,7 @@ import { useRef, useState, useEffect, useCallback, FC } from 'react';
 import styles from '../../../styles/Home.module.css';
 import axios from 'axios';
 import NextImage from 'next/image';
-import Header from '..//components/Header';
+import Header from '../components/Header';
 import Controls from '../components/Controls';
 
 interface PageProps {
