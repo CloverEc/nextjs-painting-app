@@ -81,7 +81,7 @@ const Page: FC<PageProps> = ({ params }) => {
 
     context.fillStyle = '#FFFFFF';
     context.fillRect(0, 0, canvas.width, canvas.height);
-    if (inputRef.current) {
+    if (inputRef.current && selectedItem) {
     inputRef.current.value = selectedItem.content;
     const img = new Image;
      img.onload = () => {
@@ -90,7 +90,7 @@ const Page: FC<PageProps> = ({ params }) => {
     }
      img.src = selectedItem.image2;
      setTimeout(() => sendDataToServer(selectedItem.content), 1);
-}
+    }
     let painting = false;
 
     const startPainting = (e: MouseEvent | TouchEvent) => {
