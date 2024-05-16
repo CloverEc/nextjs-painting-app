@@ -32,8 +32,8 @@ const Page: FC<PageProps> = ({ params }) => {
   ];
 
   const [loading, setLoading] = useState(true);
-  const someService = {
-    run: (src: string) => {
+  const imgService = {
+    run: (src: string,prompt: string) => {
 	    const canvas = canvasRef.current;
 	    if (!canvas) return;
 
@@ -57,8 +57,8 @@ const Page: FC<PageProps> = ({ params }) => {
 		 }
 		  img.src = src;
 	     setTimeout(() => { 
-	            sendDataToServer(selectedItem.content)
-		     setLoading(false);
+	            sendDataToServer(prompt)
+		    setLoading(false);
 	      }, 1);
 	    } 
     },
@@ -103,29 +103,22 @@ const Page: FC<PageProps> = ({ params }) => {
     if (!context) return;
 
     if (!loading) return;
-    someService.run(selectedItem.image2);
-  }, [loading,someService]);
+    const currentPrompt = inputRef.current?.value || 'dragon';
+    const image2 = selectedItem ? selectedItem.image2 : '/images/blank.png';
+    imgService.run(image2,currentPrompt);
+  }, [loading,imgService,selectedItem]);
 
 
   useEffect(() => {
-    inputRef.current.value = selectedItem.content;
+    if (inputRef.current){
+      inputRef.current.value = selectedItem ? selectedItem.content : 'dragon';
+    }
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return;
 
-    // キャンバスのサイズを固定
-	  //const canvasWidth = 512;
-	  //const canvasHeight = 512;
-
-	  //canvas.width = canvasWidth;
-	  //canvas.height = canvasHeight;
-	  //context.lineCap = 'round';
-	  //context.lineJoin = 'round';
-	  //context.fillStyle = '#FFFFFF';
-	  //context.fillRect(0, 0, canvas.width, canvas.height);
-	  //context.clearRect(0, 0, canvas.width, canvas.height);
     let painting = false;
 
     const startPainting = (e: MouseEvent | TouchEvent) => {
