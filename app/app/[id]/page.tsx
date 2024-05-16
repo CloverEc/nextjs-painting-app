@@ -6,9 +6,14 @@ import NextImage from 'next/image';
 import Header from '..//components/Header';
 import Controls from '../components/Controls';
 
-interface PageProps {}
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
 
-const Page: FC<PageProps> = ({ params }: { params: { id: int } }) => {
+
+const Page: FC<PageProps> = ({ params }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
