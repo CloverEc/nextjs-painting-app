@@ -116,7 +116,7 @@ const Page: FC<PageProps> = ({ params }) => {
 
 
   useEffect(() => {
-    if (!loading) return;
+    //if (!loading) return;
     if (!inputRef.current) return;
     if (!selectedItem) return;
     inputRef.current.value = selectedItem.content;
