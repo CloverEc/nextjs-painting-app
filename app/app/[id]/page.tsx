@@ -37,8 +37,8 @@ const Page: FC<PageProps> = ({ params }) => {
   const [loading, setLoading] = useState(true);
   const imgService = {
     run: (src: string,prompt: string) => {
-            if (!prompt || prompt === 'dragon') return;
-           
+        //  if (!prompt || prompt === 'dragon') return;
+	 setTimeout(() => { 
 	    const canvas = canvasRef.current;
 	    if (!canvas) return;
 
@@ -54,20 +54,16 @@ const Page: FC<PageProps> = ({ params }) => {
 	    context.lineJoin = 'round';
 	    context.fillStyle = '#FFFFFF';
 	    context.fillRect(0, 0, canvas.width, canvas.height);
-	    context.clearRect(0, 0, canvas.width, canvas.height);
-	   if ( src ) {
-		 const img = new Image;
-		  img.onload = () => {
+         context.clearRect(0, 0, canvas.width, canvas.height);
+   	 const img = new Image;
+		 img.onload = () => {
 		    context.drawImage(img, 0, 0, canvas.width, canvas.height);
 		 }
-		  img.src = src;
-	     setTimeout(() => { 
-                    console.log("one");
-	            sendDataToServer(prompt)
-		    setLoading(false);
-	            hasRunRef.current = true;
-	      }, 1);
-	    } 
+   	  img.src = src;
+               setTimeout(() => sendDataToServer(prompt),100);
+   	       setLoading(false);
+               hasRunRef.current = true;
+         }, 10);
     },
   };
 
@@ -102,6 +98,7 @@ const Page: FC<PageProps> = ({ params }) => {
       }
     });
   }, [apiUrl]);
+
   useEffect(() => {
     if (hasRunRef.current) return;
     const canvas = canvasRef.current;
@@ -109,11 +106,13 @@ const Page: FC<PageProps> = ({ params }) => {
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return;
     if (!loading) return;
-    if (!inputRef.current) return
-    if (!selectedItem) return
-    console.log("in");
+    if (!inputRef.current) return;
+    if (!selectedItem) return;
+   
+    inputRef.current.value = selectedItem.content;
     const currentPrompt = inputRef.current.value;
     const image2 = selectedItem ? selectedItem.image2 : '/images/blank.png';
+    console.log(image2,currentPrompt);
     imgService.run(image2,currentPrompt);
   }, [selectedItem]);
 
