@@ -1,4 +1,5 @@
 'use client'
+import dynamic from 'next/dynamic'
 import { useRef, useState, useEffect, useCallback, FC } from 'react';
 import styles from '../../../styles/Home.module.css';
 import axios from 'axios';
@@ -30,6 +31,7 @@ const Page: FC<PageProps> = ({ params }) => {
     { id: 6, title: 'Item 6', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
     { id: 7, title: 'Item 7', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
     { id: 8, title: 'Item 8', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
+    { id: 'new', title: 'new', content: 'dragon2', image1: '/images/blank.png', image2:  '/images/blank.png' },
   ];
 
   const [loading, setLoading] = useState(true);
@@ -323,4 +325,6 @@ const Page: FC<PageProps> = ({ params }) => {
   );
 };
 
-export default Page;
+export default dynamic(() => Promise.resolve(Page), {
+  ssr: false,
+});

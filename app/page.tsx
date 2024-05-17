@@ -31,7 +31,7 @@ const Home: React.FC = () => {
       </header>
       <div className={styles.content}>
         <h1 className={styles.h1}>This is the home page of the Painting App.</h1>
-        <Link href="/app" className={styles.link}>
+        <Link href="/app/new" className={styles.link}>
           Go to the Painting App
         </Link>
         <main className={styles.main}>
