@@ -108,9 +108,12 @@ const Page: FC<PageProps> = ({ params }) => {
     if (!loading) return;
     if (!inputRef.current) return;
     if (!selectedItem) return;
-   
     inputRef.current.value = selectedItem.content;
+   
+    //inputRef.current.value = selectedItem.content;
+    console.log(inputRef.current.value);
     const currentPrompt = inputRef.current.value;
+    console.log(currentPrompt);
     const image2 = selectedItem ? selectedItem.image2 : '/images/blank.png';
     console.log(image2,currentPrompt);
     imgService.run(image2,currentPrompt);
@@ -121,7 +124,7 @@ const Page: FC<PageProps> = ({ params }) => {
     //if (!loading) return;
     if (!inputRef.current) return;
     if (!selectedItem) return;
-    inputRef.current.value = selectedItem.content;
+    //inputRef.current.value = selectedItem.content;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d', { willReadFrequently: true });
@@ -141,7 +144,7 @@ const Page: FC<PageProps> = ({ params }) => {
       }
       painting = false;
       context.beginPath();
-      const currentPrompt = inputRef.current?.value || 'dragon';
+      const currentPrompt = inputRef.current?.value || '';
       sendDataToServer(currentPrompt);
     };
 

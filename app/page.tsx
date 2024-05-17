@@ -34,6 +34,9 @@ const Home: React.FC = () => {
         <Link href="/app/new" className={styles.link}>
           Go to the Painting App
         </Link>
+        <Link href="/pricing" className={styles.link}>
+          Pricing
+        </Link>
         <main className={styles.main}>
           <div className="container mx-auto p-4">
             <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ${showAnimation ? 'fade-in' : ''}`}>
@@ -42,11 +45,11 @@ const Home: React.FC = () => {
                   <div className="absolute inset-0 w-full h-full">
                     <div
                       className="absolute inset-0 w-full h-full bg-cover bg-center image1-fade"
-                      style={{ backgroundImage: `url(${item.image1})`, animationDelay: getRandomDelay() }}
+                      style={{ backgroundImage: `url(${item.image2})`, animationDelay: getRandomDelay() }}
                     ></div>
                     <div
                       className="absolute inset-0 w-full h-full bg-cover bg-center image2-fade"
-                      style={{ backgroundImage: `url(${item.image2})`, animationDelay: getRandomDelay() }}
+                      style={{ backgroundImage: `url(${item.image1})`, animationDelay: getRandomDelay() }}
                     ></div>
                   </div>
                   <div className="relative z-10 text-white">
