@@ -111,6 +111,7 @@ const Page: FC<PageProps> = ({ params }) => {
     if (!loading) return;
     if (!inputRef.current) return
     if (!selectedItem) return
+    console.log("in");
     const currentPrompt = inputRef.current.value;
     const image2 = selectedItem ? selectedItem.image2 : '/images/blank.png';
     imgService.run(image2,currentPrompt);
