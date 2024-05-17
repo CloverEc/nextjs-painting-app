@@ -112,7 +112,7 @@ const Page: FC<PageProps> = ({ params }) => {
     const currentPrompt = inputRef.current.value;
     const image2 = selectedItem ? selectedItem.image2 : '/images/blank.png';
     imgService.run(image2,currentPrompt);
-  }, [loading,imgService,selectedItem]);
+  }, [selectedItem]);
 
 
   useEffect(() => {
