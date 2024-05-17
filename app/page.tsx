@@ -16,7 +16,7 @@ const Home: React.FC = () => {
     { id: 2, title: 'Item 2', content: 'robot', image1: '/images/image3.png', image2: '/images/image4.png' },
     { id: 3, title: 'Item 3', content: 'A man widh hat and blue skin , Style - Lieutenant Bluberry, standing on his beautiful horse, arizona landscape, Jean Giraud Moebius cartoonist style', image1: '/images/image5.png', image2: '/images/image6.png' },
     { id: 4, title: 'Item 4', content: 'Ink splash waterpaint', image1: '/images/image7.png', image2: '/images/image8.png' },
-    { id: 5, title: 'Item 5', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
+    { id: 5, title: 'Item 5', content: 'analog film photo score_9, score_8_up, score_7_up, maximalist style, Realistic, cute, full body, multicolored iridescent dragon_pony_hybrid, unicorn horn, dragon wings, fluffy body, wearing obsidian armor, majestic, dreamy, cloudy, forest, standing of rocky cliff, light ray, vivid colors, vibrant, insane detailed, intricate, <lora:MJ52:0.5>, <lora:add-detail-xl:1>, <lora:xl_more_art-full_v1:0.5>, <lora:detailed_notrigger:0.5>, <lora:d3t41l3dXLP:0.6> . fade', image1: '/images/image9.png', image2:  '/images/image10.png' },
     { id: 6, title: 'Item 6', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
     { id: 7, title: 'Item 7', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
     { id: 8, title: 'Item 8', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png' },
