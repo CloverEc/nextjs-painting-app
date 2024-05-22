@@ -30,7 +30,61 @@ const Home: React.FC = () => {
     700: 1
   };
 
-  return (<div className={styles.container}>
+  return (
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <h1>Welcome to the Painting App</h1>
+      </header>
+      <div className={styles.content}>
+        <h1 className={styles.h1}>This is the home page of the Painting App.</h1>
+        <Link href="/app/new" className={styles.link}>
+          Go to the Painting App
+        </Link>
+        <Link href="/pricing" className={styles.link}>
+          Pricing
+        </Link>
+        <main className={styles.main}>
+          <div className="container mx-auto p-4">
+            <Masonry
+              breakpointCols={breakpointColumnsObj}
+              className="my-masonry-grid"
+              columnClassName="my-masonry-grid_column"
+            >
+              {items.map((item) => (
+                <div key={item.id} className={`relative mb-4 p-4 rounded shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden ${item.id === 6 ? 'w-[320px] h-[568px]' : 'w-[320px] h-[320px]'}`}>
+                <Link href={`/app/${item.id}`} >
+                  {item.id === 6 ? (
+                    <video className="absolute inset-1 w-full h-full object-cover" autoPlay muted loop preload="auto" >
+                      <source src={item.image1} type="video/mp4" />
+                      Your browser does not support the video tag.
+
+                    </video>
+                  ) : (
+                    <div className="absolute inset-0 w-full h-full">
+                      <div
+                        className="absolute inset-0 w-full h-full bg-cover bg-center image1-fade"
+                        style={{ backgroundImage: `url(${item.image2})`, animationDelay: getRandomDelay() }}
+                      ></div>
+                      <div
+                        className="absolute inset-0 w-full h-full bg-cover bg-center image2-fade"
+                        style={{ backgroundImage: `url(${item.image1})`, animationDelay: getRandomDelay() }}
+                      ></div>
+                    </div>
+                  )}
+                  <div className="relative z-10 text-white">
+                    <h2 className="text-2xl font-semibold mb-2">{item.title}</h2>
+                    <p>{item.content}</p>
+                  </div>
+                </Link>
+		</div>
+              ))}
+            </Masonry>
+          </div>
+        </main>
+      </div>
+      <footer className={styles.footer}>
+        <p>&amp;copy; 2024 Painting App</p>
+      </footer>
     </div>
   );
 };
