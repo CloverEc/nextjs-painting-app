@@ -1,17 +1,13 @@
-// app/auth/error/page.tsx
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import ErrorPage from '../../components/ErrorPage';
 
-export default function ErrorPage() {
-  const searchParams = useSearchParams();
-  const error = searchParams?.get('error');
-
+export default function ErrorPageWrapper() {
   return (
-    <div>
-      <h1>Authentication Error</h1>
-      <p>{error}</p>
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <ErrorPage />
+    </Suspense>
   );
 }
 
