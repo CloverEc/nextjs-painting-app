@@ -7,12 +7,12 @@ import { connectToDatabase } from '../../../lib/atlasdb';
 import { Item, IItem } from '../../../models/Item'; // Import the Item model correctly
 import mongoose from 'mongoose';
 
-// Configure AWS SDK
+// Configure AW SDK
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION,
+  region: process.env.AW_REGION,
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    accessKeyId: process.env.AW_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AW_SECRET_ACCESS_KEY!,
   },
 });
 
@@ -46,7 +46,7 @@ const uploadFile = async (file: File) => {
 
   const fileContent = fs.readFileSync(file.filepath);
   const params: PutObjectCommandInput = {
-    Bucket: process.env.AWS_S3_BUCKET_NAME!,
+    Bucket: process.env.AW_S3_BUCKET_NAME!,
     Key: file.newFilename, // Ensure unique file name in S3
     Body: fileContent,
     ContentType: file.mimetype!,
@@ -55,7 +55,7 @@ const uploadFile = async (file: File) => {
 
   const command = new PutObjectCommand(params);
   const data = await s3Client.send(command);
-  const fileUrl = `https://${params.Bucket}.s3.${process.env.AWS_REGION}.amazonaws.com/${params.Key}`;
+  const fileUrl = `https://${params.Bucket}.s3.${process.env.AW_REGION}.amazonaws.com/${params.Key}`;
   return { ...data, Location: fileUrl };
 };
 
