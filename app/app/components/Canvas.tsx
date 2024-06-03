@@ -1,26 +1,26 @@
-'use client'
-import React from 'react';
+'use client';
+
+import React, { useRef, useState, useEffect, useCallback, useMemo, FC } from 'react';
 import axios from 'axios';
 import NextImage from 'next/image';
-import Controls from '../components/Controls';
+import { useSession } from 'next-auth/react';
+import { useRouter, redirect } from 'next/navigation';
 import styles from '../../../styles/Home.module.css';
-import { useRef, useState, useEffect, useCallback, FC } from 'react';
-import { IItem } from '../../../models/Item'
-import { base64ToBlob } from '../../../utils/base64ToBlob';
-import { signIn, signOut, useSession } from 'next-auth/react';
-import { redirect } from 'next/navigation'
+import Controls from '../components/Controls';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Modal from '../../components/Modal';
+import { IItem } from '../../../models/Item';
+import { base64ToBlob } from '../../../utils/base64ToBlob';
 
 interface ItemListProps {
   item: IItem;
-  images: [string,string];
+  images: [string, string];
   loading: boolean;
   setLoading: (isLoading: boolean) => void;
 }
-const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => {
+
+const Canvas: FC<ItemListProps> = ({ item, images, loading, setLoading }) => {
   const { data: session, status } = useSession();
-  const selectedItem = item ? item : null;
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const hasRunRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -30,21 +30,48 @@ const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => 
   const [strokeStyle, setStrokeStyle] = useState<string>('#000000');
   const [history, setHistory] = useState<ImageData[]>([]);
   const [loading2, setLoading2] = useState<boolean>(false);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/upload" as string;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL + '/api/upload';
   const [uploadUrls, setUploadUrls] = useState<{ nextImageUrl?: string; canvasImageUrl?: string }>({});
+
+  const imgService = useMemo(() => ({
+    run: (src: string, prompt: string) => {
+      setTimeout(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const context = canvas.getContext('2d', { willReadFrequently: true });
+        if (!context) return;
+
+        const canvasWidth = 512;
+        const canvasHeight = 512;
+
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+        context.lineCap = 'round';
+        context.lineJoin = 'round';
+        context.fillStyle = '#FFFFFF';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        const img = new Image();
+        img.onload = () => {
+          context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = src;
+        hasRunRef.current = true;
+      }, 0);
+    },
+  }), []);
+
   useEffect(() => {
-    if (!session?.user){
-        return (
-           redirect('/login') 
-        );
-    }else{
-	// sendDataToServer()
-	const currentPrompt = item.prompt
-	const image2 = images ? images[1] : '/images/blank.png';
-	setImageSrc(images[0])
-        imgService.run(image2,currentPrompt);
+    if (!session?.user) {
+      redirect('/login');
+    } else {
+      const currentPrompt = item.prompt;
+      const image2 = images ? images[1] : '/images/blank.png';
+      setImageSrc(images[0]);
+      imgService.run(image2, currentPrompt);
     }
-  }, []);
+  }, [images, item.prompt, session?.user, imgService]);
 
   const sendDataToServer = useCallback(async (currentPrompt: string) => {
     if (!canvasRef.current) return;
@@ -73,13 +100,14 @@ const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => 
       }
     });
   }, [apiUrl]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     const reader = new FileReader();
     reader.onload = (event) => {
-      const img = new window.Image();  // ネイティブのImageオブジェクトを使用
+      const img = new window.Image();
       img.onload = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -97,6 +125,7 @@ const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => 
     };
     reader.readAsDataURL(file);
   };
+
   const downloadImage = () => {
     const link = document.createElement('a');
     link.href = imageSrc;
@@ -105,35 +134,7 @@ const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => 
     link.click();
     document.body.removeChild(link);
   };
-    const imgService = {
-    run: (src: string,prompt: string) => {
-        //  if (!prompt || prompt === 'dragon') return;
-	 setTimeout(() => { 
-	    const canvas = canvasRef.current;
-	    if (!canvas) return;
 
-	    const context = canvas.getContext('2d', { willReadFrequently: true });
-	    if (!context) return;
-
-	    const canvasWidth = 512;
-	    const canvasHeight = 512;
-
-	    canvas.width = canvasWidth;
-	    canvas.height = canvasHeight;
-	    context.lineCap = 'round';
-	    context.lineJoin = 'round';
-	    context.fillStyle = '#FFFFFF';
-	    context.fillRect(0, 0, canvas.width, canvas.height);
-            context.clearRect(0, 0, canvas.width, canvas.height);
-   	    const img = new Image;
-            img.onload = () => {
-		    context.drawImage(img, 0, 0, canvas.width, canvas.height);
-	 }
-   	       img.src = src;
-               hasRunRef.current = true;
-         }, 0);
-    },
-  };
   useEffect(() => {
     if (hasRunRef.current) return;
     const canvas = canvasRef.current;
@@ -141,21 +142,16 @@ const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => 
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return;
     if (!inputRef.current) return;
-    if (!selectedItem) return;
+    if (!item) return;
     inputRef.current.value = item.prompt;
 
-    //inputRef.current.value = selectedItem.content;
     const currentPrompt = inputRef.current.value;
     const image2 = images ? images[1] : '/images/blank.png';
-    // imgService.run(image2,currentPrompt);
-  }, [selectedItem]);
-
+  }, [item, images]);
 
   useEffect(() => {
-    //if (!loading) return;
     if (!inputRef.current) return;
-    if (!selectedItem) return;
-    //inputRef.current.value = selectedItem.content;
+    if (!item) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d', { willReadFrequently: true });
@@ -189,7 +185,7 @@ const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => 
       } else if (e instanceof TouchEvent) {
         clientX = e.touches[0].clientX;
         clientY = e.touches[0].clientY;
-        e.preventDefault(); // スクロールを防止
+        e.preventDefault();
       } else {
         return;
       }
@@ -224,7 +220,7 @@ const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => 
       canvas.removeEventListener('touchmove', draw);
       canvas.removeEventListener('touchcancel', stopPainting);
     };
-  }, []);
+  }, [item, sendDataToServer]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -274,7 +270,7 @@ const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => 
 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
-    setLoading2(true)
+    setLoading2(true);
     if (!canvas) return;
 
     const context = canvas.getContext('2d');
@@ -285,8 +281,9 @@ const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => 
     context.fillRect(0, 0, canvas.width, canvas.height);
     setHistory([]);
   };
+
   const createNew = async () => {
-    setLoading(true)
+    setLoading(true);
     if (!imageSrc || !canvasRef.current) return;
 
     const nextImageBlob = base64ToBlob(imageSrc, 'image/png');
@@ -303,8 +300,8 @@ const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => 
       formData.append('prompt', currentPrompt);
       formData.append('userId', session.user.id);
       formData.append('type', item.type.toString());
-      formData.append('publish', '1')
-      formData.append('status','active')
+      formData.append('publish', '1');
+      formData.append('status', 'active');
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
@@ -312,45 +309,48 @@ const Canvas:  React.FC<ItemListProps> = ({item,images,loading,setLoading }) => 
 
       const result = await response.json();
       setUploadUrls(result);
-      setLoading2(false)
+      setLoading2(false);
     }, 'image/png');
   };
+
   return (
+    <>
+      {loading2 && <LoadingSpinner />}
+      {uploadUrls && (
         <>
-	  {loading2 && <LoadingSpinner />} 
-	  { uploadUrls && (<>
-	       <div className={styles.promptContainer}>
-		  <input
-		    ref={inputRef}
-		    type="text"
-		    className={styles.promptInput}
-		    placeholder="Enter your prompt"
-		  />
-		</div>
-		<div className={styles.canvasImageContainer}>
-		  <div className={styles.imageContainer}>
-		    <NextImage src={imageSrc} className={styles.image} alt="Loaded" width={512} height={512} />
-		    <button onClick={downloadImage} className={styles.button}>Download Image</button>
-		  </div>
-		  <div className={styles.canvasContainer}>
-		    <canvas ref={canvasRef} className={styles.canvas}></canvas>
-		    <Controls
-		      lineWidth={lineWidth}
-		      strokeStyle={strokeStyle}
-		      handleLineWidthChange={handleLineWidthChange}
-		      handleColorChange={handleColorChange}
-		      handleFileChange={handleFileChange}
-		      fileInputRef={fileInputRef}
-		      clearCanvas={clearCanvas}
-		      handleUndo={handleUndo}
-		    />
-		  </div>
-		</div>
-		<div className="grid grid-flow-col" >
-		  <button onClick={createNew} className={styles.button}>Create New</button>
-		</div>
-	  </>  )}
-	</>
+          <div className={styles.promptContainer}>
+            <input
+              ref={inputRef}
+              type="text"
+              className={styles.promptInput}
+              placeholder="Enter your prompt"
+            />
+          </div>
+          <div className={styles.canvasImageContainer}>
+            <div className={styles.imageContainer}>
+              <NextImage src={imageSrc} className={styles.image} alt="Loaded" width={512} height={512} />
+              <button onClick={downloadImage} className={styles.button}>Download Image</button>
+            </div>
+            <div className={styles.canvasContainer}>
+              <canvas ref={canvasRef} className={styles.canvas}></canvas>
+              <Controls
+                lineWidth={lineWidth}
+                strokeStyle={strokeStyle}
+                handleLineWidthChange={handleLineWidthChange}
+                handleColorChange={handleColorChange}
+                handleFileChange={handleFileChange}
+                fileInputRef={fileInputRef}
+                clearCanvas={clearCanvas}
+                handleUndo={handleUndo}
+              />
+            </div>
+          </div>
+          <div className="grid grid-flow-col">
+            <button onClick={createNew} className={styles.button}>Create New</button>
+          </div>
+        </>
+      )}
+    </>
   );
 };
 

@@ -52,6 +52,7 @@ const Canvas2 = forwardRef((props: Canvas2Props, ref) => {
   };
 
   useEffect(() => {
+    if (!canvasRef) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const context = canvas.getContext('2d');
@@ -126,7 +127,7 @@ const Canvas2 = forwardRef((props: Canvas2Props, ref) => {
     };
 
     drawShapes();
-  }, [shapes, selectedShapeIndex, resizingCorner,backgroundShapes]);
+  }, [canvasRef,shapes, selectedShapeIndex, resizingCorner,backgroundShapes]);
 
   const handleMouseDown = (e: MouseEvent) => {
     const canvas = canvasRef.current;

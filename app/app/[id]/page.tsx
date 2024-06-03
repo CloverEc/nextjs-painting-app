@@ -36,26 +36,30 @@ const Page: FC<PageProps> = ({ params }) => {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleFetchItem = () => {
+  const handleFetchItem =  useCallback(async () => {
+      if (!id) return;
       setLoading(true)
-      fetch(`/api/items/${id}`)
-        .then((response) => response.json())
-        .then( async (data) => {
-          setItem(data);
-	  if (data.medias && data.medias.length >= 2) {
-		  const image1 = await fetchImageToBase64(data.medias[0]);
-		  const image2 = await fetchImageToBase64(data.medias[1]);
-		  setImages([image1,image2]);
-                  setLoading(false);
-	  }
-	});
-  }
+      try {
+	      fetch(`/api/items/${id}`)
+	      .then((response) => response.json())
+	      .then( async (data) => {
+		      setItem(data);
+		      if (data.medias && data.medias.length >= 2) {
+			      const image1 = await fetchImageToBase64(data.medias[0]);
+			      const image2 = await fetchImageToBase64(data.medias[1]);
+			      setImages([image1,image2]);
+			      setLoading(false);
+		      }
+	      });
+      }catch (error: any){
+	      console.error('Failed to fetch item:',error);
+      }
+  },[id]);
 
   useEffect(() => {
-    if (id) {
-       handleFetchItem()
-    }
-  }, [id]);
+    if (!id) return;
+    handleFetchItem()
+  }, [id,handleFetchItem]);
 
   const renderContent = () => {
      switch (item?.type) {
