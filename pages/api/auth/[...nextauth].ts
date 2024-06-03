@@ -1,5 +1,6 @@
 // pages/api/auth/[...nextauth].ts
 import NextAuth, { NextAuthOptions } from 'next-auth';
+import { useEffect, useState } from 'react';
 import GoogleProvider from 'next-auth/providers/google';
 import { connectToDatabase } from '../../../lib/atlasdb';
 import { User } from '../../../models/User';
