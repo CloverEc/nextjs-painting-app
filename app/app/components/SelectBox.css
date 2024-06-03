@@ -1,0 +1,24 @@
+.selectContainer {
+  margin: 1rem 0;
+}
+
+.selectBox {
+  width: 200px;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 1rem;
+}
+
+.selectBox:focus {
+  outline: none;
+  border-color: #888;
+}
+
+.label {
+  margin-right: 0.5rem;
+  font-size: 1rem;
+  color: #555;
+}

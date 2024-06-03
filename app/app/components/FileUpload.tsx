@@ -1,5 +1,6 @@
 import { useState, useRef, ChangeEvent, FormEvent } from 'react';
 import LoadingSpinner from './LoadingSpinner';
+import SelectBox from './SelectBox';
 import styles from '../../../styles/Home.module.css';
 const FileUpload = () => {
   const [files, setFiles] = useState<(File | null)[]>(Array(4).fill(null));
@@ -11,6 +12,27 @@ const FileUpload = () => {
   const MAX_IMAGES = 4;
   const MAX_WIDTH = 300; // Desired width for each image
   const apiUrl = process.env.NEXT_PUBLIC_API_URL  as string;
+  const options = [
+       "white strong lighting",
+       "natural lighting",
+       "sunshine from window",
+       "neon light",
+       "sunset over sea",
+       "golden time",
+       "sci-fi RGB glowing"," cyberpunk",
+       "warm atmosphere, at home, bedroom",
+       "code atmosphere, at home, bedroom",
+       "soft studio lighting",
+       "neon",
+       " Wong Kar-wai"," warm",
+       "home atmosphere","cozy bedroom illumination"
+
+  ];
+  const [selectedOption, setSelectedOption] = useState<string>(options[0]);
+  
+   const handleSelect = (option: string) => {
+        setSelectedOption(option);
+   };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (selectedCanvasIndex !== null) {
@@ -129,6 +151,7 @@ const FileUpload = () => {
           onChange={handleFileChange}
         />
         <div>
+          <SelectBox options={options} onSelect={handleSelect} />
           {Array.from({ length: MAX_IMAGES }).map((_, index) => (
             <canvas
               key={index}

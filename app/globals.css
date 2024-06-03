@@ -8,23 +8,9 @@
   --background-end-rgb: 255, 255, 255;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
 
 body {
-
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  @apply bg-white dark:bg-gray-900 text-black dark:text-white;
 }
 
 @layer utilities {
@@ -65,6 +51,7 @@ body {
 .fade-in-out {
   animation: fadeInOut 6s infinite;
 }
+
 @keyframes fadeInOut1 {
   0%, 50%, 100% {
     opacity: 1;
@@ -105,12 +92,13 @@ body {
 
 /* Style your items */
 .my-masonry-grid_column > div { /* change div to reference your elements you put in <Masonry> */
+  border-radius: 25px;
   width: 320px;
   background: white;
   margin-bottom: 30px;
 }
   
-        video { 
-            border-radius: 10px; 
-            overflow: hidden; 
-        } 
+video { 
+    border-radius: 10px; 
+    overflow: hidden; 
+} 

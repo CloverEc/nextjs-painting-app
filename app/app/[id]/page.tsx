@@ -2,11 +2,16 @@
 import dynamic from 'next/dynamic'
 import { useRef, useState, useEffect, useCallback, FC } from 'react';
 import styles from '../../../styles/Home.module.css';
-import axios from 'axios';
-import NextImage from 'next/image';
-import Header from '../components/Header';
-import Controls from '../components/Controls';
+import Header from '../../components/Header';
 import FileUpload from '../components/FileUpload';
+import FileUpload3 from '../components/FileUpload3';
+import LoadingSpinner from '../components/LoadingSpinner';
+import Canvas from '../components/Canvas';
+import { fetchImageToBase64 } from '../../../utils/fetchImageToBase64';
+import { IItem } from '../../../models/Item'
+interface ItemListProps {
+  items: IItem[];
+}
 
 interface PageProps {
   params: {
@@ -23,313 +28,55 @@ const Page: FC<PageProps> = ({ params }) => {
   const [lineWidth, setLineWidth] = useState<number>(5);
   const [strokeStyle, setStrokeStyle] = useState<string>('#000000');
   const [history, setHistory] = useState<ImageData[]>([]);
-  const items = [
-    { id: 1, title: 'Item 1', content: 'a girl open mouth', image1: '/images/image1.png', image2: '/images/image2.png',tyle: 1 },
-    { id: 2, title: 'Item 2', content: 'robot', image1: '/images/image3.png', image2: '/images/image4.png',type: 1 },
-    { id: 6, title: 'Item 6', content: 'dragon', image1: '/images/AD_00003.mp4', image2:  '/images/blank.png',type: 2 },
-    { id: 3, title: 'Item 3', content: 'A man widh hat and blue skin , Style - Lieutenant Bluberry, standing on his beautiful horse, arizona landscape, Jean Giraud Moebius cartoonist style', image1: '/images/image5.png', image2: '/images/image6.png',type: 1 },
-    { id: 4, title: 'Item 4', content: 'Ink splash waterpaint', image1: '/images/image7.png', image2: '/images/image8.png',type: 1 },
-    { id: 5, title: 'Item 5', content: 'analog film photo score_9, score_8_up, score_7_up, maximalist style, Realistic, cute, full body, multicolored iridescent dragon_pony_hybrid, unicorn horn, dragon wings, fluffy body, wearing obsidian armor, majestic, dreamy, cloudy, forest, standing of rocky cliff, light ray, vivid colors, vibrant, insane detailed, intricate, <lora:MJ52:0.5>, <lora:add-detail-xl:1>, <lora:xl_more_art-full_v1:0.5>, <lora:detailed_notrigger:0.5>, <lora:d3t41l3dXLP:0.6> . fade', image1: '/images/image9.png', image2:  '/images/image10.png',type: 1 },
-    { id: 7, title: 'Item 7', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png',type: 1 },
-    { id: 8, title: 'Item 8', content: 'dragon', image1: '/images/blank.png', image2:  '/images/blank.png',type: 1 },
-  ];
-
-
-  const [loading, setLoading] = useState(true);
-  const imgService = {
-    run: (src: string,prompt: string) => {
-        //  if (!prompt || prompt === 'dragon') return;
-	 setTimeout(() => { 
-	    const canvas = canvasRef.current;
-	    if (!canvas) return;
-
-	    const context = canvas.getContext('2d', { willReadFrequently: true });
-	    if (!context) return;
-
-	    const canvasWidth = 512;
-	    const canvasHeight = 512;
-
-	    canvas.width = canvasWidth;
-	    canvas.height = canvasHeight;
-	    context.lineCap = 'round';
-	    context.lineJoin = 'round';
-	    context.fillStyle = '#FFFFFF';
-	    context.fillRect(0, 0, canvas.width, canvas.height);
-         context.clearRect(0, 0, canvas.width, canvas.height);
-   	 const img = new Image;
-		 img.onload = () => {
-		    context.drawImage(img, 0, 0, canvas.width, canvas.height);
-		 }
-   	  img.src = src;
-               setTimeout(() => sendDataToServer(prompt),100);
-   	       setLoading(false);
-               hasRunRef.current = true;
-         }, 10);
-    },
-  };
-
-
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL + "/api/upload" as string;
+  const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState<[string, string]>(['', '']);
+  const [item, setItem] = useState<IItem | null >(null);
   const id = params.id
-  const selectedItem = id ? items.find(item => item.id.toString() === id) : null;
-  const sendDataToServer = useCallback(async (currentPrompt: string) => {
-    if (!canvasRef.current || !apiUrl) return;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
-    const canvas = canvasRef.current;
-    const imageData = canvas.toDataURL('image/png');
-    canvas.toBlob(async (blob) => {
-      if (!blob) {
-        console.error('Failed to create Blob from canvas.');
-        return;
-      }
-
-      const formData = new FormData();
-      formData.append('file', blob, 'image.png');
-      formData.append('prompt', currentPrompt);
-
-      try {
-        const response = await axios.post(apiUrl, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-        setImageSrc(`data:image/png;base64,${response.data.image}`);
-      } catch (error) {
-        console.error('Error uploading image:', error);
-      }
-    });
-  }, [apiUrl]);
+  const handleFetchItem = () => {
+      setLoading(true)
+      fetch(`/api/items/${id}`)
+        .then((response) => response.json())
+        .then( async (data) => {
+          setItem(data);
+	  if (data.medias && data.medias.length >= 2) {
+		  const image1 = await fetchImageToBase64(data.medias[0]);
+		  const image2 = await fetchImageToBase64(data.medias[1]);
+		  setImages([image1,image2]);
+                  setLoading(false);
+	  }
+	});
+  }
 
   useEffect(() => {
-    if (hasRunRef.current) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const context = canvas.getContext('2d', { willReadFrequently: true });
-    if (!context) return;
-    if (!loading) return;
-    if (!inputRef.current) return;
-    if (!selectedItem) return;
-    inputRef.current.value = selectedItem.content;
-   
-    //inputRef.current.value = selectedItem.content;
-    console.log(inputRef.current.value);
-    const currentPrompt = inputRef.current.value;
-    console.log(currentPrompt);
-    const image2 = selectedItem ? selectedItem.image2 : '/images/blank.png';
-    console.log(image2,currentPrompt);
-    imgService.run(image2,currentPrompt);
-  }, [selectedItem]);
-
-
-  useEffect(() => {
-    //if (!loading) return;
-    if (!inputRef.current) return;
-    if (!selectedItem) return;
-    //inputRef.current.value = selectedItem.content;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const context = canvas.getContext('2d', { willReadFrequently: true });
-    if (!context) return;
-
-    let painting = false;
-
-    const startPainting = (e: MouseEvent | TouchEvent) => {
-      painting = true;
-      context.beginPath();
-      draw(e);
-    };
-
-    const stopPainting = () => {
-      if (painting) {
-        saveHistory();
-      }
-      painting = false;
-      context.beginPath();
-      const currentPrompt = inputRef.current?.value || '';
-      sendDataToServer(currentPrompt);
-    };
-
-    const draw = (e: MouseEvent | TouchEvent) => {
-      if (!painting) return;
-      const rect = canvas.getBoundingClientRect();
-      let clientX, clientY;
-      if (e instanceof MouseEvent) {
-        clientX = e.clientX;
-        clientY = e.clientY;
-      } else if (e instanceof TouchEvent) {
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-        e.preventDefault(); // スクロールを防止
-      } else {
-        return;
-      }
-      context.lineTo(clientX - rect.left, clientY - rect.top);
-      context.stroke();
-      context.beginPath();
-      context.moveTo(clientX - rect.left, clientY - rect.top);
-    };
-
-    const saveHistory = () => {
-      if (!context || !canvas) return;
-      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-      setHistory((prevHistory) => [...prevHistory, imageData]);
-    };
-
-    canvas.addEventListener('mousedown', startPainting);
-    canvas.addEventListener('mouseup', stopPainting);
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('mouseleave', stopPainting);
-    canvas.addEventListener('touchstart', startPainting, { passive: false });
-    canvas.addEventListener('touchend', stopPainting);
-    canvas.addEventListener('touchmove', draw, { passive: false });
-    canvas.addEventListener('touchcancel', stopPainting);
-
-    return () => {
-      canvas.removeEventListener('mousedown', startPainting);
-      canvas.removeEventListener('mouseup', stopPainting);
-      canvas.removeEventListener('mousemove', draw);
-      canvas.removeEventListener('mouseleave', stopPainting);
-      canvas.removeEventListener('touchstart', startPainting);
-      canvas.removeEventListener('touchend', stopPainting);
-      canvas.removeEventListener('touchmove', draw);
-      canvas.removeEventListener('touchcancel', stopPainting);
-    };
-  }, [sendDataToServer,selectedItem]);
-
-  useEffect(() => {
-    if (loading) return;
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext('2d', { willReadFrequently: true });
-    if (!context) return;
-
-    context.lineWidth = lineWidth;
-  }, [lineWidth]);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext('2d', { willReadFrequently: true });
-    if (!context) return;
-
-    context.strokeStyle = strokeStyle;
-  }, [strokeStyle]);
-
-  const handleLineWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLineWidth(Number(e.target.value));
-  };
-
-  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setStrokeStyle(e.target.value);
-  };
-
-  const handleUndo = () => {
-    if (history.length === 0) return;
-    const newHistory = [...history];
-    newHistory.pop();
-    setHistory(newHistory);
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const context = canvas.getContext('2d');
-    if (!context) return;
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    if (newHistory.length > 0) {
-      context.putImageData(newHistory[newHistory.length - 1], 0, 0);
-    } else {
-      context.fillStyle = '#FFFFFF';
-      context.fillRect(0, 0, canvas.width, canvas.height);
+    if (id) {
+       handleFetchItem()
     }
+  }, [id]);
+
+  const renderContent = () => {
+     switch (item?.type) {
+       case 1:
+         return (<>
+	  {loading && <LoadingSpinner />} 
+	  {!loading && <Canvas item={item} images={images} loading={loading} setLoading={setLoading} /> }
+	  </>)
+       case 2:
+         return <FileUpload />;
+       case 3:
+         return <FileUpload3 />;
+       default:
+         return <></>;
+	       
+     }
   };
-
-  const clearCanvas = () => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const context = canvas.getContext('2d');
-    if (!context) return;
-
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = '#FFFFFF';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    setHistory([]);
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const img = new window.Image();  // ネイティブのImageオブジェクトを使用
-      img.onload = () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const context = canvas.getContext('2d');
-        if (!context) return;
-
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        context.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        const currentPrompt = inputRef.current?.value || '';
-        sendDataToServer(currentPrompt);
-      };
-      img.src = event.target?.result as string;
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const downloadImage = () => {
-    const link = document.createElement('a');
-    link.href = imageSrc;
-    link.download = 'downloaded-image.png';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
     <div className={styles.container}>
-      <Header />
-	      <div className={styles.content}>
-                  {selectedItem?.type === 2 ? (
-			  <>
-				  <FileUpload />
-			  </>
-                   ) : (
-		   <>
-		       <div className={styles.promptContainer}>
-			  <input
-			    ref={inputRef}
-			    type="text"
-			    className={styles.promptInput}
-			    placeholder="Enter your prompt"
-			  />
-			</div>
-			<div className={styles.canvasImageContainer}>
-			  <div className={styles.imageContainer}>
-			    <NextImage src={imageSrc} className={styles.image} alt="Loaded" width={512} height={512} />
-			    <button onClick={downloadImage} className={styles.button}>Download Image</button>
-			  </div>
-			  <div className={styles.canvasContainer}>
-			    <canvas ref={canvasRef} className={styles.canvas}></canvas>
-			    <Controls
-			      lineWidth={lineWidth}
-			      strokeStyle={strokeStyle}
-			      handleLineWidthChange={handleLineWidthChange}
-			      handleColorChange={handleColorChange}
-			      handleFileChange={handleFileChange}
-			      fileInputRef={fileInputRef}
-			      clearCanvas={clearCanvas}
-			      handleUndo={handleUndo}
-			    />
-			  </div>
-			</div>
-		   </>
-                  )}
-		  </div>
+      <Header  onOpenModal={openModal}/>
+      <div className={styles.content}>{renderContent()}</div>
       <footer className={styles.footer}>
         <p>&copy; 2024 Painting App</p>
       </footer>

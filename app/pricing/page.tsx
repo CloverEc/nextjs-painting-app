@@ -3,9 +3,12 @@
 import Link from 'next/link';
 import styles from '../../styles/Home.module.css';
 import React, { useEffect, useState } from 'react';
-import Header from '../app/components/Header';
+import Header from '../components/Header';
 const Page: React.FC = () => {
   const [showAnimation, setShowAnimation] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   useEffect(() => {
     setShowAnimation(true);
@@ -16,7 +19,7 @@ const Page: React.FC = () => {
   return (
 
     <div className={styles.container}>
-      <Header />
+     <Header onOpenModal={openModal} />
       <div className={styles.content}> 
 <section className="bg-white dark:bg-gray-900">
   <div className="py-8 px-4 mx-auto max-w-screen-xl lg:py-16 lg:px-6">
