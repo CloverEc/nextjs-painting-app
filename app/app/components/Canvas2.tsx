@@ -305,5 +305,7 @@ const Canvas2 = forwardRef((props: Canvas2Props, ref) => {
   return null; // No need to render anything here
 });
 
+
+Canvas2.displayName = 'Canvas2';
 export default Canvas2;
 

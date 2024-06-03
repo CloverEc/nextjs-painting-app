@@ -1,7 +1,9 @@
 // pages/api/auth/callback.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+
+
+const authCallback = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     const { user, account, profile } = req.body;
 
@@ -23,3 +25,4 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
+export default authCallback;

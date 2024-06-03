@@ -50,8 +50,8 @@ const Home: React.FC = () => {
               className="my-masonry-grid"
               columnClassName="my-masonry-grid_column"
             >
-              {publishedItems.map((item) => (
-                <div  className={`relative mb-4 p-4 rounded shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden ${item.type === 3 ? 'w-[320px] h-[568px]' : 'w-[320px] h-[320px]'}`}>
+              {publishedItems.map((item ,index) => (
+                <div key={index}  className={`relative mb-4 p-4 rounded shadow-md transform transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden ${item.type === 3 ? 'w-[320px] h-[568px]' : 'w-[320px] h-[320px]'}`}>
                 <Link href={`/app/${item._id}`} >
                   {item.type === 3 ? (
                     <video className="absolute inset-1 w-full h-full object-cover" autoPlay muted loop preload="auto" >
